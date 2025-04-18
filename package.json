@@ -230,7 +230,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node tiktok_live.js"
+    "start": "node scrips/tiktok_read_comments.js"
   },
   "repository": {
     "type": "git",

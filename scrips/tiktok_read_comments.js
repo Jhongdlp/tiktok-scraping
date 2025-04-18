@@ -1,6 +1,8 @@
 const { WebcastPushConnection } = require('tiktok-live-connector');
 const googleTTS = require('google-tts-api');
 const player = require('play-sound')();
+const readline = require('readline');
+const { spawn } = require('child_process');
 
 const tiktokUsername = 'elnixjo_'; // Cambia esto por el nombre de usuario de TikTok que quieras seguir
 let tiktok = new WebcastPushConnection(tiktokUsername);
@@ -8,6 +10,24 @@ let tiktok = new WebcastPushConnection(tiktokUsername);
 // Cola de mensajes
 let speechQueue = [];
 let isSpeaking = false;
+let currentAudioProcess = null;
+let skipCurrent = false;
+
+// Capturar tecla 'm' para mutear el mensaje actual
+readline.emitKeypressEvents(process.stdin);
+if (process.stdin.isTTY) {
+    process.stdin.setRawMode(true);
+}
+
+process.stdin.on('keypress', (str, key) => {
+    if (key.name === 'm') {
+        console.log('🔇 Mensaje silenciado manualmente.');
+        skipCurrent = true;
+        if (currentAudioProcess) {
+            currentAudioProcess.kill(); // Detiene el audio actual
+        }
+    }
+});
 
 // Función para hablar el siguiente mensaje
 function playNextInQueue() {
@@ -17,6 +37,7 @@ function playNextInQueue() {
     }
 
     isSpeaking = true;
+    skipCurrent = false;
     const text = speechQueue.shift();
 
     const url = googleTTS.getAudioUrl(text, {
@@ -25,12 +46,12 @@ function playNextInQueue() {
         host: 'https://translate.google.com',
     });
 
-    player.play(url, (err) => {
-        if (err) {
+    currentAudioProcess = player.play(url, (err) => {
+        currentAudioProcess = null;
+        if (err && !skipCurrent) {
             console.error('❌ Error al reproducir:', err);
         }
-        // Esperar a que termine para reproducir el siguiente
-        playNextInQueue();
+        playNextInQueue(); // Continuar con el siguiente audio
     });
 }
 
@@ -45,6 +66,7 @@ function speakText(text) {
 // Conexión al live
 tiktok.connect().then(() => {
     console.log(`✅ Conectado al live de ${tiktokUsername}`);
+    console.log(`Presiona 'm' para silenciar el mensaje en reproducción.`);
 }).catch(err => {
     console.error('❌ Error al conectar:', err);
 });
