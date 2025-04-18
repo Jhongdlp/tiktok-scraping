@@ -13,7 +13,7 @@ let isSpeaking = false;
 let currentAudioProcess = null;
 let skipCurrent = false;
 
-// Capturar tecla 'm' para mutear el mensaje actual
+// Capturar teclas 'm' para mutear y 'q' para cerrar el script
 readline.emitKeypressEvents(process.stdin);
 if (process.stdin.isTTY) {
     process.stdin.setRawMode(true);
@@ -26,6 +26,11 @@ process.stdin.on('keypress', (str, key) => {
         if (currentAudioProcess) {
             currentAudioProcess.kill(); // Detiene el audio actual
         }
+    }
+    if (key.name === 'q') {
+        console.log('🛑 Cerrando el script...');
+        tiktok.disconnect(); // Desconectar del live
+        process.exit(0); // Finaliza el script
     }
 });
 
@@ -67,6 +72,7 @@ function speakText(text) {
 tiktok.connect().then(() => {
     console.log(`✅ Conectado al live de ${tiktokUsername}`);
     console.log(`Presiona 'm' para silenciar el mensaje en reproducción.`);
+    console.log(`Presiona 'q' para cerrar el script.`);
 }).catch(err => {
     console.error('❌ Error al conectar:', err);
 });
