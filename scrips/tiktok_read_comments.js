@@ -2,7 +2,7 @@ const { WebcastPushConnection } = require('tiktok-live-connector');
 const googleTTS = require('google-tts-api');
 const player = require('play-sound')();
 
-const tiktokUsername = 'alanmorales1005' // Cambia esto por el nombre de usuario de TikTok que quieras seguir
+const tiktokUsername = 'elnixjo_'; // Cambia esto por el nombre de usuario de TikTok que quieras seguir
 let tiktok = new WebcastPushConnection(tiktokUsername);
 
 // Cola de mensajes

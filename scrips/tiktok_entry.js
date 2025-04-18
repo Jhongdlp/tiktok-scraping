@@ -1,6 +1,6 @@
 const { WebcastPushConnection } = require('tiktok-live-connector');
 
-const tiktokUsername = 'adibah.humairah';
+const tiktokUsername = 'elnixjo_';
 let connection = new WebcastPushConnection(tiktokUsername);
 
 // Lista para almacenar usuarios únicos
